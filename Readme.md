@@ -4,15 +4,16 @@
 - And it represents the following assembly code:
 
 ```
-lw $t1, 11($zero) # the data stored in 11($zero) is 0x11223344
-lw $t2, 12($zero) # the data stored in 12($zero) is 0x00112233
-add $t3, $t1, $t2
-sub $t4, $t1, $t2
-and $t5, $t3, $t4
-nor $t6, $t4, $t5
-slt $t6, $t6, $t3
-or $t6, $t3, $t6
-sw $t6, 13($zero)
-lw $t7, 13($zero)
+lw $a0, 12($zero) # init $a0
+lw $t1, 13($zero) # f[0] = 1
+lw $t2, 13($zero) # f[1] = 1
+lw $t3, 13($zero) # i = 1
+lw $t4, 13($zero)
+add $t5, $t2, $t1
+add $t1, $t2, $zero
+add $t2, $t5, $zero
+add $t3, $t3, $t4
+bne $t3, $a0, -5
+add $v0, $t2, $zero
 j 0
 ```

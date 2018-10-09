@@ -12,7 +12,7 @@ module Top(
     reg [31: 0] PC, IR, MDR, ALUOut, A, B;
     reg [3: 0] State;
     
-    wire PCWrite, IorD, MemRead, MemWrite, IRWrite, ALUSrcA, RegWrite, RegDst, MemtoReg, PCWriteCond, zero;
+    wire PCWrite, IorD, MemRead, MemWrite, IRWrite, ALUSrcA, RegWrite, RegDst, MemtoReg, PCWriteCond, zero, CondTrue, BEQ;
     wire [1: 0] PCSource, ALUOp, ALUSrcB;
     wire [3: 0] NextState;
     wire [31: 0] MemData, ImmExt, ALUResult, ReadData1, ReadData2, NextPC;
@@ -20,6 +20,7 @@ module Top(
     
     assign InstructionRegister = IR;
     assign currentPC = PC;
+    assign CondTrue = BEQ ? zero : !zero;
 
     Control c0(
         .Op(IR[31: 26]),
@@ -37,7 +38,8 @@ module Top(
         .ALUSrcA(ALUSrcA),
         .RegWrite(RegWrite),
         .RegDst(RegDst),
-        .NextState(NextState)
+        .NextState(NextState),
+        .BEQ(BEQ)
     );
     
     Mem m0(
@@ -102,7 +104,7 @@ module Top(
             ALUOut <= ALUResult;
             A <= ReadData1;
             B <= ReadData2;
-            if (PCWrite || (PCWriteCond && zero))
+            if (PCWrite || (PCWriteCond && CondTrue))
                 PC <= NextPC;
             State <= NextState;
         end

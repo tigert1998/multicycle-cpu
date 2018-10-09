@@ -16,15 +16,17 @@ module Control(
     output reg ALUSrcA,
     output reg RegWrite,
     output reg RegDst,
-    output reg [3: 0] NextState
+    output reg [3: 0] NextState,
+    output wire BEQ
 );
 
-    wire LW, SW, R, Jump, BEQ;
+    wire LW, SW, R, Jump, BNE;
     assign LW = Op == 6'b10_0011;
     assign SW = Op == 6'b10_1011;
     assign R = Op == 6'b00_0000;
     assign Jump = Op == 6'b00_0010;
     assign BEQ = Op == 6'b00_0100;
+    assign BNE = Op == 6'b00_0101;
     
     always @* begin
         // NextState
@@ -38,7 +40,7 @@ module Control(
                     NextState = 4'd6;
                 else if (SW || LW)
                     NextState = 4'd2;
-                else if (BEQ)
+                else if (BEQ || BNE)
                     NextState = 4'd8;
             4'd2:
                 if (LW)

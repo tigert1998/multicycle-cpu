@@ -24,7 +24,7 @@ module test_Top;
 		// Initialize Inputs
 		clk = 0;
 		rst = 1;
-		addr = 5'd14;
+		addr = 5'd10;
 
 		// Wait 100 ns for global reset to finish
 		#100;
