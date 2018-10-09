@@ -17,3 +17,21 @@ bne $t3, $a0, -5
 add $v0, $t2, $zero
 j 0
 ```
+
+## Screen shot
+
+![](resources/screenshot.png)
+
+```
+f[0] = 1
+f[1] = 1
+f[i] = f[i - 1] + f[i - 2]
+f[10] = 0x59
+```
+
+
+
+
+
+
+
