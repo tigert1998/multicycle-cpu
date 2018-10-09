@@ -19,11 +19,12 @@ module Control(
     output reg [3: 0] NextState
 );
 
-    wire LW, SW, R, Jump;
+    wire LW, SW, R, Jump, BEQ;
     assign LW = Op == 6'b10_0011;
     assign SW = Op == 6'b10_1011;
     assign R = Op == 6'b00_0000;
     assign Jump = Op == 6'b00_0010;
+    assign BEQ = Op == 6'b00_0100;
     
     always @* begin
         // NextState
@@ -37,6 +38,8 @@ module Control(
                     NextState = 4'd6;
                 else if (SW || LW)
                     NextState = 4'd2;
+                else if (BEQ)
+                    NextState = 4'd8;
             4'd2:
                 if (LW)
                     NextState = 4'd3;
@@ -48,14 +51,17 @@ module Control(
                 NextState = 4'd0;
             4'd6:
                 NextState = 4'd7;
-            4'd7, 4'd9:
+            4'd7, 4'd8, 4'd9:
                 NextState = 4'd0;
         endcase
     end
     
     always @* begin
         // PCWriteCond
-        PCWriteCond = 1'b0;
+        if (State == 4'd8)
+            PCWriteCond = 1'b1;
+        else
+            PCWriteCond = 1'b0;
     end
     
     always @* begin
@@ -76,6 +82,8 @@ module Control(
             4'd6:
                 PCWrite = 1'b0;
             4'd7:
+                PCWrite = 1'b0;
+            4'd8:
                 PCWrite = 1'b0;
             4'd9:
                 PCWrite = 1'b1;
@@ -101,6 +109,8 @@ module Control(
                 IorD = 1'bx;
             4'd7:
                 IorD = 1'bx;
+            4'd8:
+                IorD = 1'bx;
             4'd9:
                 IorD = 1'bx;
         endcase
@@ -124,6 +134,8 @@ module Control(
             4'd6:
                 MemRead = 1'b0;
             4'd7:
+                MemRead = 1'b0;
+            4'd8:
                 MemRead = 1'b0;
             4'd9:
                 MemRead = 1'b0;
@@ -149,6 +161,8 @@ module Control(
                 MemWrite = 1'b0;
             4'd7:
                 MemWrite = 1'b0;
+            4'd8:
+                MemWrite = 1'b0;
             4'd9:
                 MemWrite = 1'b0;
         endcase
@@ -173,6 +187,8 @@ module Control(
                 MemtoReg = 1'bx;
             4'd7:
                 MemtoReg = 1'b0;
+            4'd8:
+                MemtoReg = 1'bx;
             4'd9:
                 MemtoReg = 1'bx;
         endcase
@@ -196,6 +212,8 @@ module Control(
             4'd6:
                 IRWrite = 1'b0;
             4'd7:
+                IRWrite = 1'b0;
+            4'd8:
                 IRWrite = 1'b0;
             4'd9:
                 IRWrite = 1'b0;
@@ -221,6 +239,8 @@ module Control(
                 PCSource = 2'bxx;
             4'd7:
                 PCSource = 2'bxx;
+            4'd8:
+                PCSource = 2'b01;
             4'd9:
                 PCSource = 2'b10;
         endcase
@@ -245,6 +265,8 @@ module Control(
                 ALUOp = 2'b10;
             4'd7:
                 ALUOp = 2'bxx;
+            4'd8:
+                ALUOp = 2'b01;
             4'd9:
                 ALUOp = 2'bxx;
         endcase
@@ -269,6 +291,8 @@ module Control(
                 ALUSrcB = 2'b00;
             4'd7:
                 ALUSrcB = 2'bxx;
+            4'd8:
+                ALUSrcB = 2'b00;
             4'd9:
                 ALUSrcB = 2'bxx;
         endcase
@@ -293,6 +317,8 @@ module Control(
                 ALUSrcA = 1'b1;
             4'd7:
                 ALUSrcA = 1'bx;
+            4'd8:
+                ALUSrcA = 1'b1;
             4'd9:
                 ALUSrcA = 1'bx;
         endcase
@@ -317,6 +343,8 @@ module Control(
                 RegWrite = 1'b0;
             4'd7:
                 RegWrite = 1'b1;
+            4'd8:
+                RegWrite = 1'b0;
             4'd9:
                 RegWrite = 1'b0;
         endcase
@@ -341,6 +369,8 @@ module Control(
                 RegDst = 1'bx;
             4'd7:
                 RegDst = 1'b1;
+            4'd8:
+                RegDst = 1'bx;
             4'd9:
                 RegDst = 1'bx;
         endcase
